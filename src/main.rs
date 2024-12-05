@@ -1,18 +1,18 @@
-use std::error::Error;
+use crossterm::cursor::{Hide, Show};
 use crossterm::event::KeyCode;
-use crossterm::{terminal, ExecutableCommand, event};
+use crossterm::terminal::{EnterAlternateScreen, LeaveAlternateScreen};
+use crossterm::{event, terminal, ExecutableCommand};
+use invaders::explosives::{BigBombs, MiniBombs};
 use invaders::frame::{self, Drawable};
+use invaders::invaders::Invaders;
 use invaders::{player, render};
 use rusty_audio::Audio;
+use std::error::Error;
 use std::io;
-use std::time::{Duration, Instant};
-use crossterm::terminal::{EnterAlternateScreen, LeaveAlternateScreen};
-use crossterm::cursor::{Hide, Show};
 use std::sync::mpsc;
 use std::thread;
-use invaders::invaders::Invaders;
-use invaders::explosives::{BigBombs, MiniBombs};
-fn main() -> Result <(), Box<dyn Error>>{
+use std::time::{Duration, Instant};
+fn main() -> Result<(), Box<dyn Error>> {
     let mut audio = Audio::new();
 
     audio.add("explode", "sounds/explode.wav");
@@ -55,7 +55,7 @@ fn main() -> Result <(), Box<dyn Error>>{
         let mut curr_frame = frame::new_frame();
 
         // Input
-        while event::poll(Duration::from_nanos(1))?{
+        while event::poll(Duration::from_nanos(1))? {
             if let event::Event::Key(key_event) = event::read()? {
                 match key_event.code {
                     KeyCode::Left => {
@@ -72,7 +72,7 @@ fn main() -> Result <(), Box<dyn Error>>{
                     KeyCode::Esc | KeyCode::Char('q') => {
                         audio.play("lose");
                         break 'gameloop;
-                    },
+                    }
                     _ => {}
                 }
             }
@@ -90,7 +90,7 @@ fn main() -> Result <(), Box<dyn Error>>{
         if player.detect_hit_minibombs(&mut minibombs, &mut invaders) {
             audio.play("explode");
         }
-        if player.detect_hit_bigbombs(&mut bigbombs, &mut invaders){
+        if player.detect_hit_bigbombs(&mut bigbombs, &mut invaders) {
             audio.play("explode");
         }
         // Draw & render
@@ -106,12 +106,11 @@ fn main() -> Result <(), Box<dyn Error>>{
             audio.play("win");
             break 'gameloop;
         }
-        if invaders.reached_bottom(){
+        if invaders.reached_bottom() {
             audio.play("lose");
             break 'gameloop;
         }
     }
-
 
     // Clean up
     drop(render_tx);
@@ -121,7 +120,4 @@ fn main() -> Result <(), Box<dyn Error>>{
     stdout.execute(LeaveAlternateScreen)?;
     terminal::disable_raw_mode()?;
     Ok(())
-
-
 }
-

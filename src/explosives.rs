@@ -1,14 +1,13 @@
-use std::time::Duration;
-use rusty_time::timer::Timer;
 use rand::Rng;
+use rusty_time::timer::Timer;
+use std::time::Duration;
 
 use crate::{frame::Drawable, invaders::Invaders, NUM_COLS, NUM_ROWS};
 
 struct MiniBomb {
     x: usize,
-    y: usize
+    y: usize,
 }
-
 
 pub struct MiniBombs {
     bombs: Vec<MiniBomb>,
@@ -28,31 +27,34 @@ impl MiniBombs {
     pub fn update(&mut self, duration: Duration) {
         // Create a bomb in monitor
         self.timer_for_create.update(duration);
-        if self.timer_for_create.ready && self.bombs.len() < self.max_bombs{
+        if self.timer_for_create.ready && self.bombs.len() < self.max_bombs {
             let mut rng = rand::thread_rng();
-            self.bombs.push(MiniBomb{
+            self.bombs.push(MiniBomb {
                 x: rng.gen_range(0..NUM_COLS),
-                y: rng.gen_range(0..NUM_ROWS*2/3),
+                y: rng.gen_range(0..NUM_ROWS * 2 / 3),
             });
-        }   
+        }
     }
 
-    pub fn trigger_bomb_at(&mut self, x: usize, y:usize, invaders: &mut Invaders) -> bool{
-        if let Some(idx) = self.bombs.iter().position(|bomb|(bomb.x == x && bomb.y == y)) {
+    pub fn trigger_bomb_at(&mut self, x: usize, y: usize, invaders: &mut Invaders) -> bool {
+        if let Some(idx) = self
+            .bombs
+            .iter()
+            .position(|bomb| (bomb.x == x && bomb.y == y))
+        {
             self.bombs.remove(idx);
 
             // 9 palace grid
-            for ix in x-2..x+2{
-                for iy in y-2..y+2{
+            for ix in x - 2..x + 2 {
+                for iy in y - 2..y + 2 {
                     invaders.kill_invader_at(ix, iy);
                 }
             }
             true
-        }else {
+        } else {
             false
         }
     }
-    
 }
 
 impl Drawable for MiniBombs {
@@ -63,18 +65,15 @@ impl Drawable for MiniBombs {
     }
 }
 
-
 impl Default for MiniBombs {
     fn default() -> Self {
         Self {
             bombs: Vec::new(),
             max_bombs: 5,
-            timer_for_create: Timer::from_millis(1000)
+            timer_for_create: Timer::from_millis(1000),
         }
     }
 }
-
-
 
 pub struct BigBomb {
     x: usize,
@@ -99,30 +98,33 @@ impl BigBombs {
     pub fn update(&mut self, duration: Duration) {
         // Create a bomb in monitor
         self.timer_for_create.update(duration);
-        if self.timer_for_create.ready && self.bombs.len() < self.max_bombs{
+        if self.timer_for_create.ready && self.bombs.len() < self.max_bombs {
             let mut rng = rand::thread_rng();
-            self.bombs.push(BigBomb{
+            self.bombs.push(BigBomb {
                 x: rng.gen_range(0..NUM_COLS),
-                y: rng.gen_range(0..NUM_ROWS*2/3),
+                y: rng.gen_range(0..NUM_ROWS * 2 / 3),
             });
-        }   
+        }
     }
 
-    pub fn trigger_bomb_at(&mut self, x: usize, y:usize, invaders: &mut Invaders) -> bool{
-        if let Some(idx) = self.bombs.iter().position(|bomb|(bomb.x == x && bomb.y == y)) {
+    pub fn trigger_bomb_at(&mut self, x: usize, y: usize, invaders: &mut Invaders) -> bool {
+        if let Some(idx) = self
+            .bombs
+            .iter()
+            .position(|bomb| (bomb.x == x && bomb.y == y))
+        {
             self.bombs.remove(idx);
             // 9 palace grid
-            for ix in x-4..x+4{
-                for iy in y-4..y+4{
+            for ix in x - 4..x + 4 {
+                for iy in y - 4..y + 4 {
                     invaders.kill_invader_at(ix, iy);
                 }
             }
             true
-        }else {
+        } else {
             false
         }
     }
-    
 }
 
 impl Drawable for BigBombs {
@@ -133,14 +135,12 @@ impl Drawable for BigBombs {
     }
 }
 
-
 impl Default for BigBombs {
     fn default() -> Self {
         Self {
             bombs: Vec::new(),
             max_bombs: 5,
-            timer_for_create: Timer::from_millis(4000)
+            timer_for_create: Timer::from_millis(4000),
         }
     }
 }
-

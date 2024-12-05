@@ -1,19 +1,22 @@
-use std::io::Stdout;
-use std::io::Write; 
-use crossterm::{style::{Color, SetBackgroundColor}, QueueableCommand, };
-use crossterm::terminal::{Clear, ClearType};
 use crossterm::cursor::MoveTo;
+use crossterm::terminal::{Clear, ClearType};
+use crossterm::{
+    style::{Color, SetBackgroundColor},
+    QueueableCommand,
+};
+use std::io::Stdout;
+use std::io::Write;
 
 use crate::frame::Frame;
 
-pub fn render(stdout: &mut Stdout, last_frame: &Frame, curr_frame: &Frame, force: bool){
+pub fn render(stdout: &mut Stdout, last_frame: &Frame, curr_frame: &Frame, force: bool) {
     // We want to render only the changes, not everything.
     if force {
         // But at least once, we need to Draw everything. Like the start ...etc.
         stdout.queue(SetBackgroundColor(Color::Blue)).unwrap();
         stdout.queue(Clear(ClearType::All)).unwrap();
         stdout.queue(SetBackgroundColor(Color::Black)).unwrap();
-        return
+        return;
     }
 
     for (x, col) in curr_frame.iter().enumerate() {

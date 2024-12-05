@@ -1,14 +1,13 @@
 use std::time::Duration;
 
-use crate::{NUM_COLS, NUM_ROWS};
-use crate::frame::{Frame, Drawable};
-use crate::shot::Shot;
+use crate::explosives::{BigBombs, MiniBombs};
+use crate::frame::{Drawable, Frame};
 use crate::invaders::Invaders;
-use crate::explosives::{MiniBombs, BigBombs};
-
+use crate::shot::Shot;
+use crate::{NUM_COLS, NUM_ROWS};
 
 pub struct Player {
-    x: usize, 
+    x: usize,
     y: usize,
     number_of_shots: usize,
     shots: Vec<Shot>,
@@ -42,7 +41,7 @@ impl Player {
     }
 
     pub fn move_right(&mut self) {
-        if self.x < NUM_COLS -1 {
+        if self.x < NUM_COLS - 1 {
             self.x += 1;
         }
     }
@@ -64,10 +63,10 @@ impl Player {
         self.shots.retain(|shot| !shot.dead());
     }
 
-    pub fn detect_hits(&mut self, invaders: &mut Invaders) -> bool{
+    pub fn detect_hits(&mut self, invaders: &mut Invaders) -> bool {
         let mut hit_something = false;
         for shot in self.shots.iter_mut() {
-            if !shot.exploding && invaders.kill_invader_at(shot.x, shot.y){
+            if !shot.exploding && invaders.kill_invader_at(shot.x, shot.y) {
                 hit_something = true;
                 shot.explode();
             }
@@ -75,7 +74,11 @@ impl Player {
         hit_something
     }
 
-    pub fn detect_hit_minibombs(&mut self, minibombs: &mut MiniBombs, invaders: &mut Invaders) -> bool {
+    pub fn detect_hit_minibombs(
+        &mut self,
+        minibombs: &mut MiniBombs,
+        invaders: &mut Invaders,
+    ) -> bool {
         let mut hit_something = false;
         for shot in self.shots.iter_mut() {
             if !shot.exploding && minibombs.trigger_bomb_at(shot.x, shot.y, invaders) {
@@ -86,7 +89,11 @@ impl Player {
         hit_something
     }
 
-    pub fn detect_hit_bigbombs(&mut self, bigbombs: &mut BigBombs, invaders: &mut Invaders) -> bool {
+    pub fn detect_hit_bigbombs(
+        &mut self,
+        bigbombs: &mut BigBombs,
+        invaders: &mut Invaders,
+    ) -> bool {
         let mut hit_something = false;
         for shot in self.shots.iter_mut() {
             if !shot.exploding && bigbombs.trigger_bomb_at(shot.x, shot.y, invaders) {
@@ -105,4 +112,3 @@ impl Drawable for Player {
         }
     }
 }
-
