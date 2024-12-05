@@ -4,7 +4,7 @@ use crate::{NUM_COLS, NUM_ROWS};
 use crate::frame::{Frame, Drawable};
 use crate::shot::Shot;
 use crate::invaders::Invaders;
-use crate::explosives::MiniBombs;
+use crate::explosives::{MiniBombs, BigBombs};
 
 
 pub struct Player {
@@ -83,6 +83,16 @@ impl Player {
             }
         }
 
+        hit_something
+    }
+
+    pub fn detect_hit_bigbombs(&mut self, bigbombs: &mut BigBombs, invaders: &mut Invaders) -> bool {
+        let mut hit_something = false;
+        for shot in self.shots.iter_mut() {
+            if !shot.exploding && bigbombs.trigger_bomb_at(shot.x, shot.y, invaders) {
+                hit_something = true;
+            }
+        }
         hit_something
     }
 }

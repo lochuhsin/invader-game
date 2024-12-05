@@ -1,7 +1,7 @@
 use std::error::Error;
 use crossterm::event::KeyCode;
 use crossterm::{terminal, ExecutableCommand, event};
-use invaders::frame::{self, new_frame, Drawable};
+use invaders::frame::{self, Drawable};
 use invaders::{player, render};
 use rusty_audio::Audio;
 use std::io;
@@ -11,7 +11,7 @@ use crossterm::cursor::{Hide, Show};
 use std::sync::mpsc;
 use std::thread;
 use invaders::invaders::Invaders;
-use invaders::explosives::MiniBombs;
+use invaders::explosives::{BigBombs, MiniBombs};
 fn main() -> Result <(), Box<dyn Error>>{
     let mut audio = Audio::new();
 
@@ -46,12 +46,13 @@ fn main() -> Result <(), Box<dyn Error>>{
     let mut instant = Instant::now();
     let mut invaders = Invaders::new();
     let mut minibombs = MiniBombs::new(5);
-    
+    let mut bigbombs = BigBombs::new(5);
+
     'gameloop: loop {
         // Per-frame init
         let delta = instant.elapsed();
         instant = Instant::now();
-        let mut curr_frame = new_frame();
+        let mut curr_frame = frame::new_frame();
 
         // Input
         while event::poll(Duration::from_nanos(1))?{
@@ -79,19 +80,21 @@ fn main() -> Result <(), Box<dyn Error>>{
         // Updates
         player.update(delta);
         minibombs.update(delta);
+        bigbombs.update(delta);
         if invaders.update(delta) {
             audio.play("move");
         }
         if player.detect_hits(&mut invaders) {
             audio.play("explode");
         }
-
         if player.detect_hit_minibombs(&mut minibombs, &mut invaders) {
             audio.play("explode");
         }
-
+        if player.detect_hit_bigbombs(&mut bigbombs, &mut invaders){
+            audio.play("explode");
+        }
         // Draw & render
-        let drawables: Vec<&dyn Drawable> = vec![&player, &invaders, &minibombs];
+        let drawables: Vec<&dyn Drawable> = vec![&player, &invaders, &minibombs, &bigbombs];
         for drawable in drawables {
             drawable.draw(&mut curr_frame);
         }
