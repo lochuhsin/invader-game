@@ -1,2 +1,3 @@
 
-# Run `make run`
+# Run `make run` 
+# to play the game
